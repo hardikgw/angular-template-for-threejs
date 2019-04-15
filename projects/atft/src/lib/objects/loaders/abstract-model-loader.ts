@@ -110,7 +110,6 @@ export abstract class AbstractModelLoader extends AbstractObject3D<THREE.Object3
 
   protected rerender() {
     super.rerender();
-
     if (this.renderer) {
       this.renderer.render();
     }

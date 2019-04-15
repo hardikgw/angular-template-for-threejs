@@ -44,6 +44,7 @@ export class ObjLoaderDirective extends AbstractModelLoader {
           materialCreator.preload();
           this.loader.setMaterials(materialCreator as any);
           this.loader.load(this.model, resolve);
+          this.rerender();
         });
       });
     }
