@@ -1,5 +1,5 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
-import { PerspectiveCameraDirective, SceneDirective } from 'atft';
+import { PerspectiveCameraDirective, SceneDirective, WebGLRendererComponent } from 'atft';
 
 import * as THREE from 'three';
 
@@ -25,7 +25,10 @@ export class AppComponent {
   @ViewChild(SceneDirective)
   private sceneDirective: SceneDirective;
 
-  @HostListener('click', ['$event'])
+  // @ViewChild(WebGLRendererComponent)
+  // private renderer: WebGLRendererComponent;
+
+  @HostListener('contextmenu', ['$event'])
   private shoutClickedObject(event: MouseEvent) {
 
     // Compute Three.js coordinates, i.e. (0, 0) is in the center
@@ -49,10 +52,12 @@ export class AppComponent {
       .children
       .filter(child => child.type === 'Object3D');
     console.log(relevantObjects);
-    const intersectedObjects = this.raycaster.intersectObjects(relevantObjects);
+    const intersectedObjects = this.raycaster.intersectObjects(relevantObjects, true);
 
-    console.log('Intersected objects:');
-    intersectedObjects.map(x => x.object.type).forEach(console.log.bind(console));
-    console.log('\n\n');
+    intersectedObjects.forEach(intersectedObject => {
+      intersectedObject.object.rotateX(Math.PI / 2);
+    });
+
+    // this.renderer.render();
   }
 }
