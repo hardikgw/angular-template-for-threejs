@@ -25,18 +25,23 @@ export class AppComponent {
   @ViewChild(SceneDirective)
   private sceneDirective: SceneDirective;
 
-  private mousePosition = new THREE.Vector2();
+  @HostListener('click', ['$event'])
+  private shoutClickedObject(event: MouseEvent) {
 
-  @HostListener('mousemove', ['$event'])
-  private captureMousePosition(event: MouseEvent) {
-    event.preventDefault();
-    this.mousePosition.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    this.mousePosition.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-  }
+    // Compute Three.js coordinates, i.e. (0, 0) is in the center
+    // of the rendering object.
+    const targetRect = (event.target as Element).getBoundingClientRect();
+    const relativeX = event.clientX - targetRect.left; // x position within the element.
+    const relativeY = event.clientY - targetRect.top;  // y position within the element.
 
-  @HostListener('click')
-  private shoutClickedObject() {
-    this.raycaster.setFromCamera(this.mousePosition, this.cameraDirective.camera);
+    const mousePosition = new THREE.Vector2(
+      ( relativeX / targetRect.width ) * 2 - 1,
+      -( relativeY / targetRect.height ) * 2 + 1
+    );
+
+    console.log(`Clicked on ${event.target} with THREE coordinates (${mousePosition.x}), ${mousePosition.y})`);
+
+    this.raycaster.setFromCamera(mousePosition, this.cameraDirective.camera);
 
     console.log(((this.sceneDirective as any).object as THREE.Scene)
     .children.map(x => x.type));
@@ -45,6 +50,9 @@ export class AppComponent {
       .filter(child => child.type === 'Object3D');
     console.log(relevantObjects);
     const intersectedObjects = this.raycaster.intersectObjects(relevantObjects);
+
+    console.log('Intersected objects:');
     intersectedObjects.map(x => x.object.type).forEach(console.log.bind(console));
+    console.log('\n\n');
   }
 }
